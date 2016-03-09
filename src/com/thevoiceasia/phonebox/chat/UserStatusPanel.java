@@ -19,6 +19,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.jivesoftware.smack.PresenceListener;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Mode;
@@ -31,7 +32,7 @@ import org.jivesoftware.smackx.muc.ParticipantStatusListener;
  * @author Wayne Merricks
  *
  */
-public class UserStatusPanel extends JPanel implements ParticipantStatusListener, StanzaListener {
+public class UserStatusPanel extends JPanel implements ParticipantStatusListener, StanzaListener, PresenceListener {
 
 	private HashMap<String, Integer> roomRoster = new HashMap<String, Integer>();
 	private I18NStrings xStrings; //Link to external string resources
@@ -279,6 +280,13 @@ public class UserStatusPanel extends JPanel implements ParticipantStatusListener
 	public void voiceRevoked(String participant) {}
 	/** END UNUSED ParticipantStatusListener methods **/
 
+	@Override
+	public void processPresence(Presence presence) {
+		
+		processPacket(presence);
+		
+	}
+	
 	@Override
 	public void processPacket(Stanza XMPPPacket) {
 		

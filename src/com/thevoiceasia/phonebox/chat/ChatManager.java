@@ -10,6 +10,9 @@ import javax.swing.JOptionPane;
 
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
@@ -22,6 +25,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration.Builder;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
@@ -29,7 +33,7 @@ import org.jivesoftware.smackx.muc.UserStatusListener;
 
 import com.thevoiceasia.phonebox.misc.LastActionTimer;
 
-public class ChatManager implements UserStatusListener, StanzaListener {
+public class ChatManager implements UserStatusListener, StanzaListener, MessageListener {
 
 	//XMPP Settings
 	private String XMPPUserName, XMPPPassword, XMPPNickName, XMPPServerHostName, XMPPRoomName,
@@ -272,7 +276,10 @@ public class ChatManager implements UserStatusListener, StanzaListener {
 	 */
 	public void connect(){
 		
-		XMPPTCPConnectionConfiguration serverConfig = XMPPTCPConnectionConfiguration.builder().setServiceName(XMPPServerHostName).build();
+		Builder builder = XMPPTCPConnectionConfiguration.builder();
+		builder.setServiceName(XMPPServerHostName);
+		builder.setSecurityMode(SecurityMode.disabled);
+		XMPPTCPConnectionConfiguration serverConfig = builder.build();
 		XMPPServerConnection = new XMPPTCPConnection(serverConfig);
 		hasErrors = false;
 		
@@ -508,6 +515,13 @@ public class ChatManager implements UserStatusListener, StanzaListener {
 		
 	}
 
+	@Override
+	public void processMessage(Message message) {
+		
+		processPacket(message);
+		
+	}
+	
 	/** PacketListener methods **/
 	@Override
 	public void processPacket(Stanza XMPPPacket) {
